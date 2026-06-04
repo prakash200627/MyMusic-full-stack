@@ -14,7 +14,7 @@ const PlayerContextProvider = (props) => {
         }
         return 'http://localhost:4000';
     };
-    const url = getBackendUrl();
+    const url = getBackendUrl().replace(/\/+$/, '');
     console.log("Backend URL =", url);
 
     const [songsData, setSongsData] = useState([]);
