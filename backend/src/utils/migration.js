@@ -9,11 +9,11 @@ import fs from "fs";
 export const runStartupMigration = async () => {
     try {
         console.log("🚀 Starting database relational migration scan for MyMusic schema...");
-        
+
         const songs = await songModel.find({});
         const albums = await albumModel.find({});
         const artists = await Artist.find({});
-        
+
         console.log(`🔍 Found ${songs.length} songs, ${albums.length} albums, and ${artists.length} artists.`);
 
         // Ensure we have at least one fallback artist
@@ -31,7 +31,8 @@ export const runStartupMigration = async () => {
         // Clean up and seed users from admin/users.json
         console.log("👥 Restructuring and seeding users from admin/users.json...");
 
-        const usersJsonPath = "c:\\Users\\prakash\\Downloads\\projects\\MyMusic-full-stack\\admin\\users.json";
+        const usersJsonPath = process.env.USERS_JSON_PATH || "./users.json";
+
         if (fs.existsSync(usersJsonPath)) {
             const usersData = JSON.parse(fs.readFileSync(usersJsonPath, "utf-8"));
             for (const u of usersData) {
@@ -122,7 +123,7 @@ export const runStartupMigration = async () => {
             const legacyAlbumVal = song.album || song.albumId;
             if (legacyAlbumVal && !song.albumId) {
                 const isObjectId = /^[0-9a-fA-F]{24}$/.test(String(legacyAlbumVal));
-                
+
                 if (isObjectId) {
                     const albumExists = albumById[String(legacyAlbumVal)];
                     if (albumExists) {
@@ -134,7 +135,7 @@ export const runStartupMigration = async () => {
                     // Legacy string album title
                     const albumTitleStr = String(legacyAlbumVal).trim();
                     let matchedAlbum = albumByTitle[albumTitleStr.toLowerCase()];
-                    
+
                     if (!matchedAlbum) {
                         console.log(`🆕 Creating Matched Album "${albumTitleStr}" for song "${song.title}"`);
                         matchedAlbum = new albumModel({
@@ -187,7 +188,7 @@ export const runStartupMigration = async () => {
                     album.songs = allSongIds;
                     await album.save();
                     console.log(`✅ Copied all ${allSongIds.length} tracks into empty Album: "${album.title}"`);
-                    
+
                     // Assign song albumId to this album if the song doesn't have one assigned
                     for (const song of songs) {
                         if (!song.albumId) {
