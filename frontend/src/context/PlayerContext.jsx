@@ -15,6 +15,7 @@ const PlayerContextProvider = (props) => {
         return 'http://localhost:4000';
     };
     const url = getBackendUrl();
+    console.log("Backend URL =", url);
 
     const [songsData, setSongsData] = useState([]);
     const [isLoadingSongs, setIsLoadingSongs] = useState(true);
@@ -25,7 +26,7 @@ const PlayerContextProvider = (props) => {
     const [currentContextId, setCurrentContextId] = useState(null);
     const [autoPlayOnTrackChange, setAutoPlayOnTrackChange] = useState(false);
     const [playStatus, setPlayStatus] = useState(false);
-    
+
     // Premium Audio Player States
     const [volume, setVolume] = useState(1.0);
     const [isMuted, setIsMuted] = useState(false);
@@ -39,7 +40,7 @@ const PlayerContextProvider = (props) => {
 
     // Category Filter & Page-Popup Modal state managers
     const [activeCategory, setActiveCategory] = useState('all'); // 'all' | 'songs' | 'albums'
-    const [modalConfig, setModalConfig] = useState(null); 
+    const [modalConfig, setModalConfig] = useState(null);
 
     // Toast notification state
     const [toastMessage, setToastMessage] = useState(null);
@@ -178,14 +179,14 @@ const PlayerContextProvider = (props) => {
             });
         });
     };
-    
+
     // Customized Queue & Creator States
     const [activeRightSidebarTab, setActiveRightSidebarTab] = useState('nowPlaying');
     const [customQueue, setCustomQueue] = useState([]);
     const [shuffledSequence, setShuffledSequence] = useState([]);
     const [savedAlbumsData, setSavedAlbumsData] = useState([]);
     const [lastPreviousClickTime, setLastPreviousClickTime] = useState(0);
-    
+
     // Sleep Timer States
     const [sleepTimerId, setSleepTimerId] = useState(null);
     const [sleepTimeRemaining, setSleepTimeRemaining] = useState(null);
@@ -201,11 +202,11 @@ const PlayerContextProvider = (props) => {
         }
     });
 
-    const play=() => {
+    const play = () => {
         audioRef.current.play();
         setPlayStatus(true);
     }
-    const pause=() => {
+    const pause = () => {
         audioRef.current.pause();
         setPlayStatus(false);
     }
@@ -213,44 +214,44 @@ const PlayerContextProvider = (props) => {
     const changeVolume = (newVol) => {
         const val = parseFloat(newVol);
         setVolume(val);
-        if(audioRef.current) {
+        if (audioRef.current) {
             audioRef.current.volume = isMuted ? 0 : val;
         }
     }
 
     const toggleMute = () => {
-        if(isMuted) {
-            if(audioRef.current) audioRef.current.volume = volume;
+        if (isMuted) {
+            if (audioRef.current) audioRef.current.volume = volume;
             setIsMuted(false);
         } else {
-            if(audioRef.current) audioRef.current.volume = 0;
+            if (audioRef.current) audioRef.current.volume = 0;
             setIsMuted(true);
         }
     }
 
     const getContextPool = (currentTrack) => {
         if (!currentTrack) return [];
-        
+
         if (currentContextId === 'likes') {
             return likedSongs || [];
         }
-        
+
         if (currentContextId && playlistsData.some(p => String(p._id) === String(currentContextId))) {
             const activePlaylist = playlistsData.find(p => String(p._id) === String(currentContextId));
             return activePlaylist ? (activePlaylist.songs || []).filter(s => s !== null && s !== undefined) : [];
         }
-        
+
         if (currentContextId === 'mix') {
             return songsData || [];
         }
-        
+
         if (currentContextId && albumsData.some(a => String(a._id) === String(currentContextId))) {
             return (songsData || []).filter(s => {
                 const songAlbumId = s.albumId && (s.albumId._id || s.albumId);
                 return String(songAlbumId) === String(currentContextId);
             });
         }
-        
+
         // Fallback: active album or catalog
         const activeAlbumId = currentTrack.albumId && (currentTrack.albumId._id || currentTrack.albumId);
         if (activeAlbumId) {
@@ -259,7 +260,7 @@ const PlayerContextProvider = (props) => {
                 return String(songAlbumId) === String(activeAlbumId);
             });
         }
-        
+
         return songsData || [];
     };
 
@@ -271,8 +272,8 @@ const PlayerContextProvider = (props) => {
         });
     };
 
-    const previous = async() => {
-        if(!track || songsData.length === 0) return;
+    const previous = async () => {
+        if (!track || songsData.length === 0) return;
 
         const currentTime = audioRef.current ? audioRef.current.currentTime : 0;
         const now = Date.now();
@@ -291,7 +292,7 @@ const PlayerContextProvider = (props) => {
             return;
         }
 
-        if(repeatMode === 'track') {
+        if (repeatMode === 'track') {
             if (audioRef.current) {
                 audioRef.current.currentTime = 0;
                 audioRef.current.play();
@@ -302,7 +303,7 @@ const PlayerContextProvider = (props) => {
 
         const contextTracks = getContextPool(track);
         const currentIndex = contextTracks.findIndex(s => String(s._id) === String(track._id));
-        
+
         if (currentIndex > 0) {
             const prevTrack = contextTracks[currentIndex - 1];
             setTrack(prevTrack);
@@ -330,9 +331,9 @@ const PlayerContextProvider = (props) => {
         }
     }
 
-    const next = async() => {
-        if(!track || songsData.length === 0) return;
-        if(repeatMode === 'track') {
+    const next = async () => {
+        if (!track || songsData.length === 0) return;
+        if (repeatMode === 'track') {
             if (audioRef.current) {
                 audioRef.current.currentTime = 0;
                 audioRef.current.play();
@@ -375,7 +376,7 @@ const PlayerContextProvider = (props) => {
                     return;
                 }
             }
-            
+
             // fallback loop or general catalog next
             const generalIndex = songsData.findIndex(s => String(s._id) === String(track._id));
             if (generalIndex >= 0 && generalIndex < songsData.length - 1) {
@@ -513,12 +514,12 @@ const PlayerContextProvider = (props) => {
         return [...customQueue, ...getUpcomingAutoTracks()];
     };
 
-    const seekSong=(e)=>{
-        audioRef.current.currentTime= ((e.nativeEvent.offsetX / seekBg.current.offsetWidth)* audioRef.current.duration);
+    const seekSong = (e) => {
+        audioRef.current.currentTime = ((e.nativeEvent.offsetX / seekBg.current.offsetWidth) * audioRef.current.duration);
     }
 
-    const playWithId=async(id, contextId = null)=>{
-        if(!songsData || songsData.length===0) return;
+    const playWithId = async (id, contextId = null) => {
+        if (!songsData || songsData.length === 0) return;
 
         // If clicking on the currently active track and the context also matches (or is not specified)
         if (track && track._id === id && (contextId === null || currentContextId === contextId)) {
@@ -531,7 +532,7 @@ const PlayerContextProvider = (props) => {
         }
 
         const found = songsData.find(s => s._id === id);
-        if(!found) return;
+        if (!found) return;
         setTrack(found);
         setCurrentContextId(contextId);
         setAutoPlayOnTrackChange(true);
@@ -539,7 +540,7 @@ const PlayerContextProvider = (props) => {
 
     const playAlbumWithId = async (albumId) => {
         if (!songsData || songsData.length === 0) return;
-        
+
         let albumSongs = [];
         if (albumId === 'mix') {
             albumSongs = [...songsData];
@@ -554,7 +555,7 @@ const PlayerContextProvider = (props) => {
             setTrack(albumSongs[0]);
             setCurrentContextId(albumId);
             setAutoPlayOnTrackChange(true);
-            
+
             // Re-sync shuffle sequence for this new list if isShuffle is true
             if (isShuffle) {
                 const otherTracks = albumSongs.slice(1).sort(() => Math.random() - 0.5);
@@ -565,10 +566,10 @@ const PlayerContextProvider = (props) => {
         }
     };
 
-    const getSongsData=async(page = 1, limit = 200)=>{
+    const getSongsData = async (page = 1, limit = 200) => {
         try {
             setIsLoadingSongs(true);
-            const response=await axios.get(`${url}/api/songs?page=${page}&limit=${limit}`)
+            const response = await axios.get(`${url}/api/song/list?page=${page}&limit=${limit}`);
             // normalize backend song shape to frontend expectations
             const mapped = (response.data.songs || []).map(s => ({
                 ...s,
@@ -590,13 +591,13 @@ const PlayerContextProvider = (props) => {
                 initialTrack = mapped[0];
             }
 
-            if(initialTrack && !track){
+            if (initialTrack && !track) {
                 setTrack(initialTrack);
                 if (savedContextId) {
                     setCurrentContextId(savedContextId);
                 }
                 // ensure audio src is set for the initial track
-                if(audioRef.current) {
+                if (audioRef.current) {
                     audioRef.current.src = initialTrack.file;
                     audioRef.current.dataset.progressRestored = '';
                 }
@@ -608,9 +609,9 @@ const PlayerContextProvider = (props) => {
         }
     }
 
-    const getAlbumsData=async()=>{
+    const getAlbumsData = async () => {
         try {
-            const response=await axios.get(`${url}/api/album/list`) 
+            const response = await axios.get(`${url}/api/album/list`)
             // backend uses `title`; normalize to `name` for the UI
             const mapped = (response.data.albums || []).map(a => ({
                 ...a,
@@ -825,7 +826,7 @@ const PlayerContextProvider = (props) => {
 
     useEffect(() => {
         const audio = audioRef.current;
-        if(!audio) return;
+        if (!audio) return;
 
         // Apply volume
         audio.volume = isMuted ? 0 : volume;
@@ -834,7 +835,7 @@ const PlayerContextProvider = (props) => {
             const currentTime = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
             const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
             const percent = duration > 0 ? Math.floor((currentTime / duration) * 100) : 0;
-            if(seekBar.current) seekBar.current.style.width = percent + "%";
+            if (seekBar.current) seekBar.current.style.width = percent + "%";
             setTime({
                 current: {
                     seconds: Math.floor(currentTime % 60),
@@ -915,7 +916,7 @@ const PlayerContextProvider = (props) => {
     // Handle song ending (loop vs next track)
     useEffect(() => {
         const audio = audioRef.current;
-        if(!audio) return;
+        if (!audio) return;
 
         const handleEnded = () => {
             next();
@@ -929,8 +930,8 @@ const PlayerContextProvider = (props) => {
 
     // centralize playback when `track` changes
     useEffect(() => {
-        if(!track || !audioRef.current) return;
-        if(!autoPlayOnTrackChange) return;
+        if (!track || !audioRef.current) return;
+        if (!autoPlayOnTrackChange) return;
 
         const doPlay = async () => {
             try {
@@ -1024,13 +1025,13 @@ const PlayerContextProvider = (props) => {
         }
     }, [currentContextId]);
 
-    useEffect(()=>{
+    useEffect(() => {
         getSongsData();
         getAlbumsData();
         getPlaylistsData();
         getSavedAlbumsData();
         getLikedSongsData();
-    },[])
+    }, [])
 
 
 
@@ -1043,8 +1044,8 @@ const PlayerContextProvider = (props) => {
         track, setTrack,
         currentContextId, setCurrentContextId,
         playStatus, setPlayStatus,
-        time, setTime, 
-        play, pause, 
+        time, setTime,
+        play, pause,
         playWithId,
         playAlbumWithId,
         previous, next,

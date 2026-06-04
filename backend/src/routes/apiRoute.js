@@ -3,7 +3,7 @@ import songModel from "../models/songModel.js";
 
 const apiRouter = express.Router();
 
-// GET /api/songs - Paginated list of songs
+// GET /api/song/list - Paginated list of songs
 apiRouter.get("/songs", async (req, res) => {
     try {
         let { page = 1, limit = 200 } = req.query; // Default to 200 to return all 171 songs if no limit specified
