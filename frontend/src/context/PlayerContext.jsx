@@ -8,7 +8,7 @@ const PlayerContextProvider = (props) => {
     const seekBar = useRef();
 
     const getBackendUrl = () => {
-        const envUrl = import.meta.env.VITE_BACKEND_URL;
+        const envUrl = import.meta.env.VITE_API_URL;
         if (envUrl && envUrl !== 'undefined' && envUrl !== 'null' && envUrl.trim() !== '') {
             return envUrl;
         }
