@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import ListAlbum from './pages/ListAlbum';
 import AddSong from './pages/AddSong';
 import AddAlbum from './pages/AddAlbum';
@@ -72,6 +72,7 @@ function App() {
         <Navbar theme={theme} toggleTheme={toggleTheme} />
         <div className='pt-8 pl-5 sm:pt-12 sm:pl-12'>
           <Routes>
+            <Route path='/' element={<Navigate to="/list-song" replace />} />
             <Route path='/add-song' element={<AddSong />} />
             <Route path='/add-album' element={<AddAlbum />} />
             <Route path='/list-song' element={<ListSong />} />
