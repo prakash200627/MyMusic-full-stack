@@ -178,25 +178,26 @@ export const runStartupMigration = async () => {
             }
         }
 
-        // D. FALLBACK COPY MIGRATION: Ensure every album has tracks.
-        // If an album currently has 0 songs, copy ALL existing song ObjectIds in the database into its songs list!
-        const allSongIds = songs.map(s => s._id);
-        if (allSongIds.length > 0) {
-            for (const album of albums) {
-                // If album has no songs, associate all tracks into it
-                if (!album.songs || album.songs.length === 0) {
-                    album.songs = allSongIds;
-                    await album.save();
-                    console.log(`✅ Copied all ${allSongIds.length} tracks into empty Album: "${album.title}"`);
+        // D. REPAIR CORRUPTION: Remove auto-assigned songs from albums (like "Jersey") caused by legacy fallback migration
+        const jerseyAlbum = await albumModel.findOne({ title: { $regex: /^jersey$/i } });
+        if (jerseyAlbum) {
+            // 1. Reset songs that were incorrectly assigned to Jersey albumId (where the song's album title doesn't match)
+            const songRepairResult = await songModel.updateMany(
+                { albumId: jerseyAlbum._id, album: { $ne: "Jersey" } },
+                { $set: { albumId: null, album: "Single" } }
+            );
+            if (songRepairResult.modifiedCount > 0) {
+                console.log(`🩹 Reset ${songRepairResult.modifiedCount} songs that were auto-assigned to the 'Jersey' albumId.`);
+            }
 
-                    // Assign song albumId to this album if the song doesn't have one assigned
-                    for (const song of songs) {
-                        if (!song.albumId) {
-                            song.albumId = album._id;
-                            await song.save();
-                        }
-                    }
-                }
+            // 2. Sync Jersey album's songs list to only contain songs that actually belong to it
+            const actualJerseySongs = await songModel.find({ albumId: jerseyAlbum._id });
+            const actualJerseySongIds = actualJerseySongs.map(s => s._id);
+            
+            if (jerseyAlbum.songs.length !== actualJerseySongIds.length) {
+                jerseyAlbum.songs = actualJerseySongIds;
+                await jerseyAlbum.save();
+                console.log(`🩹 Restored 'Jersey' album songs array to only its ${actualJerseySongIds.length} actual songs.`);
             }
         }
 

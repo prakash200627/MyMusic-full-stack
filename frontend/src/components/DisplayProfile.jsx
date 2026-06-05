@@ -13,6 +13,7 @@ const DisplayProfile = () => {
     localStorage.removeItem('userId')
     localStorage.removeItem('username')
     localStorage.removeItem('role')
+    localStorage.removeItem('isSuspended')
     window.location.reload()
   }
 
@@ -38,7 +39,7 @@ const DisplayProfile = () => {
 
         {/* Profile Avatar Header */}
         <div className='flex flex-col items-center gap-3.5 mt-2'>
-          <div className='w-20 h-20 rounded-full bg-purple-500 hover:bg-purple-400 text-black border-4 border-white dark:border-zinc-950 shadow-lg flex items-center justify-center font-black text-3xl uppercase capitalize select-none transition-all'>
+          <div className='w-20 h-20 rounded-full bg-purple-500 hover:bg-purple-400 text-black border-4 border-white dark:border-zinc-950 shadow-lg flex items-center justify-center font-black text-3xl uppercase select-none transition-all'>
             {username[0]}
           </div>
           <div className='text-center'>

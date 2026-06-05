@@ -1,5 +1,5 @@
 {
-  "name": "spotify-admin",
+  "name": "mymusic-admin",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "axios": "^1.12.2",
+    "mymusic-workspace": "file:..",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.4",

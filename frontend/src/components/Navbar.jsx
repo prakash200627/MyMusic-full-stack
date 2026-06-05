@@ -1,11 +1,12 @@
 import React, { useContext, useState, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { PlayerContext } from '../context/PlayerContext'
 import { ThemeContext } from '../context/ThemeContext'
 import { assets } from '../assets/assets'
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   
   const { 
     searchTerm, 
@@ -15,10 +16,28 @@ const Navbar = () => {
   } = useContext(PlayerContext);
 
   const { theme, setTheme } = useContext(ThemeContext);
+  const [searchFromPath, setSearchFromPath] = useState(null);
+
+  // Clear searchFromPath if the user navigates away to a new page manually
+  useEffect(() => {
+    if (location.pathname !== '/' && location.pathname !== '/search') {
+      if (searchFromPath && location.pathname !== searchFromPath) {
+        setSearchFromPath(null);
+      }
+    }
+  }, [location.pathname]);
+
+  // Clear searchFromPath if search is completely cleared while on home or search page
+  useEffect(() => {
+    if ((location.pathname === '/' || location.pathname === '/search') && searchTerm.trim() === '') {
+      setSearchFromPath(null);
+    }
+  }, [location.pathname, searchTerm]);
 
   const handleHomeClick = () => {
     setIsSearchActive(false);
     setSearchTerm('');
+    setSearchFromPath(null);
     navigate('/');
   }
 
@@ -67,12 +86,32 @@ const Navbar = () => {
             type="text" 
             placeholder="What do you want to play?" 
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              setSearchTerm(val);
+              if (val.trim() !== '') {
+                if (location.pathname !== '/' && location.pathname !== '/search') {
+                  setSearchFromPath(location.pathname);
+                  navigate('/');
+                }
+              } else {
+                if (searchFromPath) {
+                  navigate(searchFromPath);
+                  setSearchFromPath(null);
+                }
+              }
+            }}
             className='w-full bg-gray-150 dark:bg-[#121212] text-gray-900 dark:text-white pl-10 pr-10 py-2.5 rounded-full text-sm font-normal focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-gray-400 border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 transition-all shadow-sm'
           />
           {searchTerm && (
             <button 
-              onClick={() => setSearchTerm('')} 
+              onClick={() => {
+                setSearchTerm('');
+                if (searchFromPath) {
+                  navigate(searchFromPath);
+                  setSearchFromPath(null);
+                }
+              }} 
               className='absolute right-3.5 text-gray-400 hover:text-black dark:hover:text-white font-bold text-xs bg-transparent border-none outline-none cursor-pointer'
             >
               ✕

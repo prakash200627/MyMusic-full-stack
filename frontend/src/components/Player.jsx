@@ -1,6 +1,5 @@
 import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { assets } from '../assets/assets'
 import { PlayerContext } from '../context/PlayerContext';
 
 const Player = () => {

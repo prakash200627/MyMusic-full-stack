@@ -1,5 +1,5 @@
 {
-  "name": "spotify-clone-app",
+  "name": "mymusic-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -14,6 +14,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "axios": "^1.12.2",
+    "mymusic-workspace": "file:..",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.4"

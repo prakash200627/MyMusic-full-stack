@@ -13,7 +13,7 @@ import axios from 'axios'
 
 const App = () => {
 
-  const { audioRef, track, songsData, showNowPlaying, modalConfig, toastMessage, isSuspended, isMobilePlayerOpen } = useContext(PlayerContext)
+  const { audioRef, track, songsData, isLoadingSongs, showNowPlaying, modalConfig, toastMessage, isSuspended, isMobilePlayerOpen } = useContext(PlayerContext)
   const [token, setToken] = useState(localStorage.getItem('token') || '')
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
 
@@ -57,6 +57,7 @@ const App = () => {
               localStorage.removeItem('username');
               localStorage.removeItem('userId');
               localStorage.removeItem('role');
+              localStorage.removeItem('isSuspended');
               window.location.reload();
             }}
             className="w-full bg-red-600 hover:bg-red-500 text-white font-extrabold py-3.5 rounded-full hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer text-sm shadow-lg border-none"
@@ -73,7 +74,7 @@ const App = () => {
       {!token ? (
         <AuthPages onLoginSuccess={(tok) => setToken(tok)} />
       ) : (
-        songsData.length !== 0
+        !isLoadingSongs
           ?
           <>
             {!isMobile && <Navbar />}

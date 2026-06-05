@@ -68,6 +68,7 @@ const AdminLogin = ({ onLoginSuccess }) => {
               onChange={(e) => setUsername(e.target.value)}
               className="bg-[#F3FFF7] dark:bg-zinc-900/65 border-2 border-black dark:border-[#00FF5B] rounded-none px-4 py-2.5 text-sm text-gray-900 dark:text-white outline-none focus:bg-white dark:focus:bg-zinc-950 transition-all font-semibold"
               required
+              autoComplete="username"
             />
           </div>
 
@@ -81,6 +82,7 @@ const AdminLogin = ({ onLoginSuccess }) => {
               onChange={(e) => setPassword(e.target.value)}
               className="bg-[#F3FFF7] dark:bg-zinc-900/65 border-2 border-black dark:border-[#00FF5B] rounded-none px-4 py-2.5 text-sm text-gray-900 dark:text-white outline-none focus:bg-white dark:focus:bg-zinc-950 transition-all font-semibold"
               required
+              autoComplete="current-password"
             />
           </div>
 

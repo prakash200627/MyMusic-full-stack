@@ -15,7 +15,9 @@ const PlayerContextProvider = (props) => {
         return 'http://localhost:4000';
     };
     const url = getBackendUrl().replace(/\/+$/, '');
-    console.log("Backend URL =", url);
+    useEffect(() => {
+        console.log("Backend URL =", url);
+    }, [url]);
 
     const [songsData, setSongsData] = useState([]);
     const [isLoadingSongs, setIsLoadingSongs] = useState(true);
@@ -32,7 +34,17 @@ const PlayerContextProvider = (props) => {
     const [isMuted, setIsMuted] = useState(false);
     const [isShuffle, setIsShuffle] = useState(false);
     const [repeatMode, setRepeatMode] = useState('off'); // 'off' | 'context' | 'track'
-    const [isSuspended, setIsSuspended] = useState(false);
+    const [isSuspended, setIsSuspended] = useState(localStorage.getItem('isSuspended') === 'true');
+    const prevSuspendedRef = useRef(isSuspended);
+
+    useEffect(() => {
+        if (prevSuspendedRef.current !== isSuspended) {
+            localStorage.setItem('isSuspended', isSuspended ? 'true' : 'false');
+            prevSuspendedRef.current = isSuspended;
+            window.location.reload();
+        }
+    }, [isSuspended]);
+
     const [searchTerm, setSearchTerm] = useState('');
     const [showNowPlaying, setShowNowPlaying] = useState(true);
     const [isSearchActive, setIsSearchActive] = useState(false);
@@ -568,7 +580,6 @@ const PlayerContextProvider = (props) => {
 
     const getSongsData = async (page = 1, limit = 200) => {
         try {
-            setIsLoadingSongs(true);
             const response = await axios.get(`${url}/api/song/list?page=${page}&limit=${limit}`);
             // normalize backend song shape to frontend expectations
             const mapped = (response.data.songs || []).map(s => ({
