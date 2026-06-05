@@ -22,6 +22,7 @@ const getBackendUrl = () => {
   return 'http://localhost:4000';
 };
 export const url = getBackendUrl();
+console.log("Admin API URL is:", url);
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('admin-token') || '')
